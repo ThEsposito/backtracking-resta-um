@@ -3,9 +3,16 @@
 #define LINHAS 7
 #define COLUNAS 7
 
-void resta_um(int tab[LINHAS][COLUNAS], int i) {
-    if (i >= 31) return;
+int eh_movimento_valido(int tab[LINHAS][COLUNAS], int origem_x, int origem_y, int destino_x, int destino_y) {
+    if (origem_x < 0 || origem_x > COLUNAS || destino_x < 0 || destino_y > LINHAS) return 0;
+    if ((destino_x <= 1 || destino_x >= 4) && destino_y <= 1 || destino_x >= 4) return 0;
     if ()
+    return 1;
+}
+
+void resta_um(int tab[LINHAS][COLUNAS], int i) {
+    if (i > 31) return; // Passaram-se os 32 movimentos válidos
+    // if ()
 }
 
 // Gravar em arquivo
