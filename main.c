@@ -3,20 +3,24 @@
 #define LINHAS 7
 #define COLUNAS 7
 
-int eh_movimento_valido(int tab[LINHAS][COLUNAS], int origem_x, int origem_y, int destino_x, int destino_y) {
-    if (origem_x < 0 || origem_x > COLUNAS || destino_x < 0 || destino_y > LINHAS) return 0;
-    if ((destino_x <= 1 || destino_x >= 4) && destino_y <= 1 || destino_x >= 4) return 0;
-    if ()
-    return 1;
-}
+typedef struct {
+    int x;
+    int y;
+} Ponto;
 
-void resta_um(int tab[LINHAS][COLUNAS], int i) {
-    if (i > 31) return; // Passaram-se os 32 movimentos válidos
-    // if ()
-}
+typedef struct {
+    Ponto origem;
+    Ponto destino;
+} Movimento;
 
-// Gravar em arquivo
-void exibir_tabuleiro(int tabuleiro[LINHAS][COLUNAS]) {
+
+void realizar_movimento(char tab[LINHAS][COLUNAS],  Ponto origem,  Ponto destino);
+
+void exibir_tabuleiro(char tabuleiro[LINHAS][COLUNAS]) {
+    printf("\n");
+    for (int i = 0; i < LINHAS+2; i++) printf("#");
+    printf("\n");
+
     for (int i = 0; i < LINHAS; i++) {
         printf("#");
         for (int j = 0; j < COLUNAS; j++) {
@@ -24,6 +28,36 @@ void exibir_tabuleiro(int tabuleiro[LINHAS][COLUNAS]) {
         }
         printf("#\n");
     }
+    for (int i = 0; i < LINHAS+2; i++) printf("#");
+    printf("\n");
+}
+
+void exibir_solucao(char tabuleiro[LINHAS][COLUNAS], Movimento movimentos[31]) {
+    for (int i = 0; i < 31; i++) {
+        exibir_tabuleiro(tabuleiro);
+        printf("\n");
+
+        realizar_movimento(tabuleiro, movimentos[i].origem, movimentos[i].destino);
+    }
+    exibir_tabuleiro(tabuleiro);
+}
+
+// Tô levando em consideração que a origem já está validada (vai ser controlada no loop da função recursiva)
+bool eh_movimento_valido(char tab[LINHAS][COLUNAS], Ponto origem,  Ponto destino) {
+    if (destino.x < 0  destino.x >= COLUNAS  destino.y < 0  destino.y >= LINHAS) return false; // Validando índices
+    if ((destino.y <= 1  destino.y >= 5) && (destino.x <= 1 || destino.x >= 5)) return false; // Eliminando cantos do tabuleiro
+
+    Ponto meio = {(destino.x + origem.x)/2,(destino.y + origem.y)/2}; // posição entre origem e destino
+
+    return tab[origem.y][origem.x] == 'o' && tab[meio.y][meio.x] == 'o' && tab[destino.y][destino.x] == ' ';
+}
+
+
+void desfazer_movimento(char tab[LINHAS][COLUNAS], Ponto origem, Ponto destino) { // Backtrack
+    Ponto meio = {(destino.x + origem.x)/2,(destino.y + origem.y)/2};
+    tab[meio.y][meio.x] = 'o';
+    tab[origem.y][origem.x] = 'o';
+    tab[destino.y][destino.x] = ' ';
 }
 
 int main() {
