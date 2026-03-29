@@ -14,6 +14,7 @@ typedef struct {
     Ponto destino;
 } Movimento;
 
+
 void realizar_movimento(char tab[LINHAS][COLUNAS],  Ponto origem,  Ponto destino);
 
 void exibir_tabuleiro(char tabuleiro[LINHAS][COLUNAS]) {
@@ -35,7 +36,7 @@ void exibir_tabuleiro(char tabuleiro[LINHAS][COLUNAS]) {
 void exibir_solucao(char tabuleiro[LINHAS][COLUNAS], Movimento movimentos[31]) {
     for (int i = 0; i < 31; i++) {
         exibir_tabuleiro(tabuleiro);
-
+        printf("\n");
         realizar_movimento(tabuleiro, movimentos[i].origem, movimentos[i].destino);
     }
     exibir_tabuleiro(tabuleiro);
@@ -51,7 +52,6 @@ bool eh_movimento_valido(char tab[LINHAS][COLUNAS], Ponto origem,  Ponto destino
     return tab[origem.y][origem.x] == 'o' && tab[meio.y][meio.x] == 'o' && tab[destino.y][destino.x] == ' ';
 }
 
-
 void desfazer_movimento(char tab[LINHAS][COLUNAS], Ponto origem, Ponto destino) { // Backtrack
     Ponto meio = {(destino.x + origem.x)/2,(destino.y + origem.y)/2};
     tab[meio.y][meio.x] = 'o';
@@ -61,11 +61,9 @@ void desfazer_movimento(char tab[LINHAS][COLUNAS], Ponto origem, Ponto destino) 
 
 bool ganhou(char tab[LINHAS][COLUNAS]) {
     int qtde_pecas = 0;
-    for (int i = 0; i < LINHAS; i++) {
-        for (int j = 0; j < COLUNAS; j++) {
+    for (int i = 0; i < LINHAS; i++)
+        for (int j = 0; j < COLUNAS; j++)
             if (tab[i][j] == 'o') qtde_pecas++;
-        }
-    }
 
     return qtde_pecas == 1 && tab[3][3] == 'o';
 }
@@ -84,10 +82,11 @@ bool resta_um(char tab[LINHAS][COLUNAS], Movimento solucoes[31], int i) {
 
     for (int j = 0; j < LINHAS; j++) {
         for (int k = 0; k < COLUNAS; k++) {
-            if (tab[j][k] == 'o') {
-                Ponto origem = {k, j};
+            Ponto origem = {k, j};
 
-                Ponto moves[] = {{origem.x, origem.y-2}, {origem.x, origem.y+2}, {origem.x-2, origem.y}, {origem.x+2, origem.y}};
+            Ponto moves[] = {{origem.x, origem.y-2}, {origem.x, origem.y+2}, {origem.x-2, origem.y}, {origem.x+2, origem.y}};
+
+            if (tab[j][k] == 'o') {
                 for (int l = 0; l < 4; l++) {
                     if (eh_movimento_valido(tab, origem, moves[l])) {
                         solucoes[i].origem = origem;
@@ -95,14 +94,46 @@ bool resta_um(char tab[LINHAS][COLUNAS], Movimento solucoes[31], int i) {
 
                         realizar_movimento(tab, origem, moves[l]);
                         if (resta_um(tab, solucoes, i + 1)) return true;
-                        desfazer_movimento(tab, origem, moves[l]);
+                        desfazer_movimento(tab, origem, moves[l]); 
                     }
                 }
             }
         }
-     }
+    }
 
     return false;
+}
+
+// Escreve o tabuleiro em um arquivo 
+void escrever_tabuleiro_arquivo(FILE *f, char tab[LINHAS][COLUNAS]) {
+    for (int i = 0; i < LINHAS+2; i++) fprintf(f, "#");
+    fprintf(f, "\n");
+    for (int i = 0; i < LINHAS; i++) {
+        fprintf(f, "#");
+        for (int j = 0; j < COLUNAS; j++) fprintf(f, "%c", tab[i][j]);
+        fprintf(f, "#\n");
+    }
+    for (int i = 0; i < LINHAS+2; i++) fprintf(f, "#");
+    fprintf(f, "\n");
+}
+
+// Salva a sequência de estados do tabuleiro no arquivo
+void salvar_sequencia(char tabuleiro[LINHAS][COLUNAS], Movimento movimentos[31], const char *nome_arquivo) {
+    FILE *f = fopen(nome_arquivo, "w");
+    if (f == NULL) {
+        printf("Erro ao abrir o arquivo '%s' para escrita.\n", nome_arquivo);
+        return;
+    }
+
+    for (int i = 0; i < 31; i++) {
+        escrever_tabuleiro_arquivo(f, tabuleiro);
+        fprintf(f, "\n"); 
+        realizar_movimento(tabuleiro, movimentos[i].origem, movimentos[i].destino);
+    }
+    escrever_tabuleiro_arquivo(f, tabuleiro); // estado final 
+
+    fclose(f);
+    printf("\nSequencia salva em '%s'.\n", nome_arquivo);
 }
 
 int main() {
@@ -117,6 +148,7 @@ int main() {
     };
 
     Movimento solucoes[31] = {};
+
     char tabuleiroAux[LINHAS][COLUNAS] = {
         {'#','#','o','o','o','#','#'},
         {'#','#','o','o','o','#','#'},
@@ -127,7 +159,22 @@ int main() {
         {'#','#','o','o','o','#','#'}
     };
 
+    // Tabuleiro separado para salvar, pois exibir_solucao consome o tabuleiroAux
+    char tabSalva[LINHAS][COLUNAS] = {
+        {'#','#','o','o','o','#','#'},
+        {'#','#','o','o','o','#','#'},
+        {'o','o','o','o','o','o','o'},
+        {'o','o','o',' ','o','o','o'},
+        {'o','o','o','o','o','o','o'},
+        {'#','#','o','o','o','#','#'},
+        {'#','#','o','o','o','#','#'}
+    };
+
     resta_um(tabuleiro, solucoes, 0);
+
     exibir_solucao(tabuleiroAux, solucoes);
+
+    salvar_sequencia(tabSalva, solucoes, "SolucaoDoJoaozinhoGameplays.txt");
+
     return 0;
 }
