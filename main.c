@@ -14,7 +14,6 @@ typedef struct {
     Ponto destino;
 } Movimento;
 
-
 void realizar_movimento(char tab[LINHAS][COLUNAS],  Ponto origem,  Ponto destino);
 
 void exibir_tabuleiro(char tabuleiro[LINHAS][COLUNAS]) {
@@ -36,7 +35,6 @@ void exibir_tabuleiro(char tabuleiro[LINHAS][COLUNAS]) {
 void exibir_solucao(char tabuleiro[LINHAS][COLUNAS], Movimento movimentos[31]) {
     for (int i = 0; i < 31; i++) {
         exibir_tabuleiro(tabuleiro);
-        printf("\n");
 
         realizar_movimento(tabuleiro, movimentos[i].origem, movimentos[i].destino);
     }
@@ -86,15 +84,10 @@ bool resta_um(char tab[LINHAS][COLUNAS], Movimento solucoes[31], int i) {
 
     for (int j = 0; j < LINHAS; j++) {
         for (int k = 0; k < COLUNAS; k++) {
-            Ponto origem = {k, j};
-            Ponto mov_cima = {origem.x, origem.y-2};
-            Ponto mov_baixo = {origem.x, origem.y+2};
-            Ponto mov_esq = {origem.x-2, origem.y};
-            Ponto mov_dir = {origem.x+2, origem.y};
-
-            Ponto moves[] = {mov_cima, mov_baixo, mov_esq, mov_dir};
-
             if (tab[j][k] == 'o') {
+                Ponto origem = {k, j};
+
+                Ponto moves[] = {{origem.x, origem.y-2}, {origem.x, origem.y+2}, {origem.x-2, origem.y}, {origem.x+2, origem.y}};
                 for (int l = 0; l < 4; l++) {
                     if (eh_movimento_valido(tab, origem, moves[l])) {
                         solucoes[i].origem = origem;
