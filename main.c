@@ -174,7 +174,7 @@ int main() {
 
     exibir_solucao(tabuleiroAux, solucoes);
 
-    salvar_sequencia(tabSalva, solucoes, "SolucaoDoJoaozinhoGameplays.txt");
+    salvar_sequencia(tabSalva, solucoes, "solucao.txt");
 
     return 0;
 }
