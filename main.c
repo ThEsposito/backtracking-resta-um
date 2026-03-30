@@ -6,8 +6,8 @@ Integrantes do projeto:
  - Nome: Felipe Kanamaru de Oliveira
    RA: 10435742
 
- - Nome: É o Reiss, pae
-   RA:
+ - Nome: João Victor de Almeida Reiss
+   RA: 10723789
  */
 
 #include <stdio.h>
