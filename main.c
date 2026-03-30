@@ -1,3 +1,15 @@
+/*
+Integrantes do projeto:
+ - Nome: Theo Espósito Simões Resende
+   RA: 10721356
+
+ - Nome: Felipe Kanamaru de Oliveira
+   RA: 10435742
+
+ - Nome: É o Reiss, pae
+   RA:
+ */
+
 #include <stdio.h>
 #include <stdbool.h>
 
